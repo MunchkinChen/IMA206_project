@@ -3,6 +3,8 @@ base_path = "/home/infres/xchen-21/IMA206_project"
 sys.path.append(base_path)
 
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,8 +17,7 @@ from data_processing import *
 
 #%%
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-SAVE_UNET_PATH = os.path.join(base_path,r'saved_models/unet_weight.pt')
-# SAVE_UNET_PATH = os.path.join(base_path,r'saved_models/really_naive_UNet.pt')
+SAVE_UNET_PATH = os.path.join(base_path,r'saved_models/unet_random_crop.pt')
 VISUALIZE_ID = 1 # select a patient id to visualize segmentation results
 df = pd.read_csv('database/metadata.csv')
 #%%
@@ -76,22 +77,15 @@ visualize_data(data_dict)
 
 
 
-
-
-
 #%% load model weights
-model = UNet(n_channels=3, n_classes=1).to(DEVICE)
+model = UNet(n_channels=1, n_classes=4).to(DEVICE)
 state_dict = torch.load(SAVE_UNET_PATH)
 model.load_state_dict(state_dict)
 print(f'Weights loaded from {SAVE_UNET_PATH}')
 model.eval()
 
 
-#%% run model on a validation sample
-num_img = "%03d" % VISUALIZE_ID
-print(f'Visualizing segmentation results on patient {num_img}')
-file_dict = {"image": os.path.join(base_path, f"./data/Train/{num_img}/{num_img}_ED.nii"),
-             "label": os.path.join(base_path, f"./data/Train/{num_img}/{num_img}_ED_seg.nii")}
+#%% run model on a test sample
 val_batch = transform_val(file_dict)
 
 
