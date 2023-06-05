@@ -99,48 +99,26 @@ val_batch = transform_val(file_dict)
 # plt.show()
 
 #% visualize model output
+val_batch_input = val_batch["image"].permute(3, 0, 1, 2).to(DEVICE)
 outputs_val = monai.inferers.sliding_window_inference(
-    inputs=val_batch["input"].squeeze(0).permute(3, 0, 1, 2).to(DEVICE),
+    inputs=val_batch_input,
     predictor=model,
     roi_size=(128, 128),
     sw_batch_size=32)
 outputs_val = outputs_val.permute(1, 2, 3, 0)  # (1, H, W, D) a probability distribution for LV class (not normalized)
-
-plt.imshow(outputs_val.detach().cpu().numpy()[0, :, :, 5])
-plt.title('unet output')
-plt.savefig(os.path.join(base_path,'images/unet_output.png'))
-plt.colorbar()
-plt.show()
-
-
-#% visualize predicted mask
-outputs_val = postprocess(outputs_val)  # (1, H, W, D) a 0-1 mask for LV class
-plt.imshow(outputs_val.detach().cpu().numpy()[0, :, :, 5])
-plt.title('predicted mask')
-plt.savefig(os.path.join(base_path,'images/predicted_mask.png'))
-plt.colorbar()
-plt.show()
-
-
-#% metric on prediction of validation sample
-y_pred = outputs_val.unsqueeze(0).cpu()  # (1, 1, H, W, D)
-y = val_batch["label"].unsqueeze(0)
-
-dice_metric = monai.metrics.DiceMetric()
-dsc = dice_metric(y_pred, y)
-
-hd_metric = monai.metrics.HausdorffDistanceMetric()
-hd = hd_metric(y_pred, y)
-print(f'metric on sample: DSC {dsc.mean().numpy():.3f}, HD {hd.mean().numpy():.3f}')
+outputs_val = postprocess(outputs_val)
+#%%
+label_pred = torch.argmax(outputs_val, dim=0)
+label_gt = val_batch["label"].squeeze()
 
 
 #%% visualize ground truth and predicted results on MDR image
-result = {"image": val_batch["input"][0, :, :, :].squeeze(),
-          "label": outputs_val.squeeze().cpu()}
-print("Predicted mask of class 3")
+result = {"image": val_batch["image"][0, :, :, :].squeeze(),
+          "label": label_pred.cpu()}
+print("Predicted mask")
 visualize_data(result)
 
-gt = {"image": val_batch["input"][0, :, :, :].squeeze(),
-      "label": val_batch["label"].squeeze()}
-print("Ground truth of class 3")
+gt = {"image": val_batch["image"][0, :, :, :].squeeze(),
+      "label": label_gt.cpu()}
+print("Ground truth")
 visualize_data(gt)
