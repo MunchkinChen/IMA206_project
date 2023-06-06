@@ -60,7 +60,8 @@ print(f'Train set contains {len(dataset_train)} elements')
 dataset_val = monai.data.Dataset(data=file_dict_val, transform=transform_val)
 dataloader_val = monai.data.DataLoader(dataset_val, batch_size=1, shuffle=False)
 print(f'Validation set contains {len(dataset_val)} elements')
-
+#%%
+tmp=next(iter(dataloader_train))
 
 #%% define model, loss function and optimizer
 model = UNet(n_channels=1, n_classes=4).to(DEVICE)
@@ -126,13 +127,14 @@ if VAL_SIZE > 0:
     for i,val_batch in enumerate(dataloader_val):
         val_batch_input = val_batch["image"].squeeze(0).permute(3, 0, 1, 2).to(DEVICE)
         with torch.no_grad():
-            outputs_val = monai.inferers.sliding_window_inference(
+            outputs_val = monai.inferers.slidimng_window_inference(
                 inputs=val_batch_input,
                 predictor=model,
                 roi_size=(128, 128),
                 sw_batch_size=32)
         outputs_val = outputs_val.permute(1, 2, 3, 0) # (4, H, W, D)
         outputs_val = postprocess(outputs_val)  # (4, H, W, D) a 0-1 mask for 4 classes
+
 
         y_pred = outputs_val.unsqueeze(0).cpu()  # (1, 4, H, W, D)
         y_gt = monai.networks.utils.one_hot(val_batch["label"],num_classes=4)

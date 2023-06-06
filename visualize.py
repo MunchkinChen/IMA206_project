@@ -49,7 +49,6 @@ def visualize_data(data_dict, save_file_name=None):
     plt.show()
 
 
-
 #%% visualize some training data, with gt label
 num = 101
 num_img = "%03d" % num
@@ -75,8 +74,6 @@ visualize_data(data_dict)
 
 
 
-
-
 #%% load model weights
 model = UNet(n_channels=1, n_classes=4).to(DEVICE)
 state_dict = torch.load(SAVE_UNET_PATH)
@@ -87,18 +84,6 @@ model.eval()
 
 #%% run model on a test sample
 val_batch = transform_val(file_dict)
-
-
-# plt.imshow(val_batch["input"].detach().cpu().numpy()[0, :, :, 5],cmap='gray')
-# plt.imshow(val_batch["input"].detach().cpu().numpy()[1, :, :, 5],cmap=ListedColormap([(1, 1, 1, 0), (1, 0, 0, 0.5)]))
-# plt.imshow(val_batch["input"].detach().cpu().numpy()[2, :, :, 5],cmap=ListedColormap([(1, 1, 1, 0), (0, 1, 0, 0.5)]))
-# # plt.imshow(val_batch["label"].detach().cpu().numpy()[0, :, :, 5])
-# plt.title('input channel all')
-# plt.savefig(os.path.join(base_path,'images/input_channel_all.png'))
-# plt.axis('off')
-# plt.show()
-
-#% visualize model output
 val_batch_input = val_batch["image"].permute(3, 0, 1, 2).to(DEVICE)
 outputs_val = monai.inferers.sliding_window_inference(
     inputs=val_batch_input,
@@ -107,7 +92,8 @@ outputs_val = monai.inferers.sliding_window_inference(
     sw_batch_size=32)
 outputs_val = outputs_val.permute(1, 2, 3, 0)  # (1, H, W, D) a probability distribution for LV class (not normalized)
 outputs_val = postprocess(outputs_val)
-#%%
+
+#%% convert output to label with integers (0,1,2,3)
 label_pred = torch.argmax(outputs_val, dim=0)
 label_gt = val_batch["label"].squeeze()
 
