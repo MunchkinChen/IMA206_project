@@ -8,7 +8,7 @@ import monai
 from typing import Union
 
 df = pd.read_csv('database/metadata.csv')
-base_path = "/home/infres/xchen-21/IMA206_project"
+base_path = "."
 
 def visualize_2D(data_2D_dict, ax=None, title=None):
     '''
