@@ -10,15 +10,17 @@ from typing import Union
 df = pd.read_csv('database/metadata.csv')
 base_path = "."
 
-def visualize_2D(data_2D_dict, ax=None, title=None):
+def visualize_2D(data_2D_dict, ax_=None, title=None):
     '''
     :param data_dict: {"image": 2D, "label": 2D}
     '''
     image_2D = data_2D_dict["image"].squeeze()
     label_2D = data_2D_dict["label"].squeeze()
 
-    if ax is None:
+    if ax_ is None:
         fig, ax = plt.subplots()
+    else:
+        ax = ax_
 
     # color map for labels: 1-Red 2-Green 3-Blue
     cmap = ListedColormap([(1, 1, 1, 0), (1, 0, 0, 0.5), (0, 1, 0, 0.5), (0, 0, 1, 0.5)])
@@ -28,7 +30,7 @@ def visualize_2D(data_2D_dict, ax=None, title=None):
     if title is not None:
         ax.set_title(title)
 
-    if ax is None:
+    if ax_ is None:
         plt.show()
 
 
