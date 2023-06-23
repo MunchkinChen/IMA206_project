@@ -51,8 +51,12 @@ def visualize_3D(data_dict, save_file_name=None):
         row = z // num_cols
         col = z % num_cols
         title = f"Slice {z + 1}"
+        if row>1:
+            ax = axs[row, col]
+        else:
+            ax = axs[col]
         visualize_2D({"image": image[:, :, z],"label": label[:, :, z]},
-                     ax=axs[row, col],
+                     ax_=ax,
                      title=title)
 
     # turn off unused subplots
@@ -97,5 +101,5 @@ def load_data_dict(patient_id, mode: str):
     return data_dict
 
 #%%
-tmp = load_file_dict(101,'ED')
-tmp
+# tmp = load_file_dict(101,'ED')
+# tmp
