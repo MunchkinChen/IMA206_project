@@ -1,4 +1,5 @@
 **.ipynb_checkpoints/
-./database/testing
-./database/training
-./saved_models
+database/testing/
+database/training/
+saved_models/
+__pycache__/
