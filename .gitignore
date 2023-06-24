@@ -1,0 +1,4 @@
+**.ipynb_checkpoints/
+./database/testing
+./database/training
+./saved_models
