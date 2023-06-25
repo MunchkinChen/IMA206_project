@@ -51,7 +51,7 @@ def visualize_3D(data_dict, save_file_name=None):
         row = z // num_cols
         col = z % num_cols
         title = f"Slice {z + 1}"
-        if row>1:
+        if num_rows>1:
             ax = axs[row, col]
         else:
             ax = axs[col]
