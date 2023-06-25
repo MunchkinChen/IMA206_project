@@ -97,7 +97,7 @@ def load_file_dict(patient_id, mode: str):
 
 def load_data_dict(patient_id, mode: str):
     file_dict = load_file_dict(patient_id, mode)
-    data_dict = monai.transforms.LoadImageD(("image", "label"))(file_dict)
+    data_dict = monai.transforms.LoadImageD(("image", "label"), image_only=True)(file_dict)
     return data_dict
 
 #%%
