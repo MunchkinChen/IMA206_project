@@ -13,10 +13,10 @@ class DoubleConv(nn.Module):
         if not mid_channels:
             mid_channels = out_channels
         self.double_conv = nn.Sequential(
-            nn.Conv2d(in_channels, mid_channels, kernel_size=3, dilation=dilation, padding=1, bias=False),
+            nn.Conv2d(in_channels, mid_channels, kernel_size=3, dilation=dilation, padding=dilation, bias=False),
             nn.BatchNorm2d(mid_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(mid_channels, out_channels, kernel_size=3, dilation=dilation, padding=1, bias=False),
+            nn.Conv2d(mid_channels, out_channels, kernel_size=3, dilation=dilation, padding=dilation, bias=False),
             nn.BatchNorm2d(out_channels),
             nn.ReLU(inplace=True)
         )
@@ -80,6 +80,7 @@ class UNet(nn.Module):
         self.n_channels = n_channels
         self.n_classes = n_classes
         self.bilinear = bilinear
+        self.dilation = dilation
 
         self.inc = (DoubleConv(n_channels, 64, dilation=dilation))
         self.down1 = (Down(64, 128))
